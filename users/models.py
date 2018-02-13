@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     nickname = models.CharField(max_length=50, blank=True)
+    service = models.IntegerField(default=-1)
 
     class Meta(AbstractUser.Meta):
         pass

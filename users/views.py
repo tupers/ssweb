@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -38,5 +39,9 @@ def register(request):
     return render(request, 'users/register.html', context={'form': form, 'next': redirect_to})
 
 def index(request):
+    response = HttpResponse()
+    user = request.user
+    if user.is_authenticated():
+        pass
     return render(request, 'index.html')
 
