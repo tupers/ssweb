@@ -1,0 +1,20 @@
+.nav {
+    background-color:#FFFFFF;
+}
+.nav a{
+   text-decoration:none;
+}
+.nav ul{
+	white-space:nowrap;
+}
+.nav li{
+    margin: 1.875rem 1rem 0.5rem 0;
+    padding-left: 1rem;
+    list-style-type:none;
+    display:inline-block;
+    border-left:1px solid;
+}
+
+li.first-nav{
+    border-left-style: none;
+}

@@ -1,42 +1,154 @@
 {% extends "base.html" %}
 {% block mainbody %}
+    {% load staticfiles %}
     <head>
         <title>首页</title>
+        <link rel="stylesheet" href="{% static 'ccs/style.css' %}" type="text/css">
+        <link rel="stylesheet" href="{% static 'ccs/custom.css' %}" type="text/css">
     </head>
     <body>
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script>
+        function requirePort(){
+            $.ajaxSetup({
+                data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+            });
+            $.ajax({
+                url:"{% url 'users:requireport' %}",
+                type:'POST',
+                data:{user:"{{user.username}}"},
+                success: function(arg){
+                    var ret = $.parseJSON(arg);
+                    var service_info = $("#service_info");
+                    if(ret.port!="None")
+                    {
+                        service_info.empty();
+                        service_info.append("<p id=\"port\">"+ret.port+"</p>");
+                        service_info.append("<p>设置密码:</p>");
+                        service_info.append("<input type=\"text\" id=\"pwd\"/>");
+                        service_info.append("<button class=\"btn btn-default\" onclick=\"addService();\">提交</button>");
+                    }
+                    else
+                    {
+                        service_info.empty();
+                        service_info.append("<p>no available port.</p>");
+                    }
+
+                }
+            });
+        }
+        function addService(){
+            $.ajaxSetup({
+                data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+            });
+            $.ajax({
+                url:"{% url 'users:addservice' %}",
+                type:'POST',
+                data:{password:$("#pwd").val(),port:$("#port").html()},
+                success:function(arg){
+                    var ret = $.parseJSON(arg);
+                    var service_info = $("#service_info");
+                    if(ret.status!="ok")
+                    {
+                        service_info.empty();
+                        service_info.append("<p>添加服务失败</p>");
+                    }
+                    else
+                    {
+                        service_info.empty();
+                        service_info.append("<p>添加服务成功</p>")
+                    }
+                }
+            });
+        }
+    </script>
     <div class="flex-center">
-        <div class="container-fluid">
-            <div class="flex-left">
+        <div class="container-fluid nav">
+            <div class="flex-left flex-wrap">
                 <div class="unit">
-                    <h1 class="logo"><a href="{% url 'index' %}">ShadowSocks</a></h1>
+                    <h1><a href="{% url 'index' %}">ShadowSocks</a></h1>
                 </div>
-                <div class="unit flex-right">
-                    {% if user.is_authenticated %}
-                        <p>你已登录：<a href="#">{{ user.username }}</a>
-                        <button class="btn btn-default"><a href="{% url 'logout' %}?next={{ request.path }}">注销登录</a></button>
-                        <button class="btn btn-default"><a href="{% url 'password_change' %}?next={{ request.path }}">修改密码</a></button>
-                            </p>
-                    {% else %}
-                        <p>
-                            <button class="btn btn-default"><a href="{% url 'login' %}?next={{ request.path }}">登录</a></button>
-                            <button class="btn btn-default"><a href="{% url 'users:register' %}">注册</a></button>
-                        </p>
-                    {% endif %}
+                <div class="unit flex-right text-primary">
+                <ul>
+                        {% if user.is_authenticated %}
+                            <li class="first-nav"><a href="#">{{ user.username }}</a></li>
+                            <li><a href="{% url 'logout' %}?next={{ request.path }}">注销登录</a></li>
+                            <li><a href="{% url 'password_change' %}?next={{ request.path }}">修改密码</a></li>
+                        {% else %}
+                            <li class="first-nav"><a href="{% url 'login' %}?next={{ request.path }}">登录</a></li>
+                            <li><a href="{% url 'users:register' %}">注册</a></li>
+                        {% endif %}
+                </ul>
                 </div>
             </div>
-            <div class="unit" style="background-color: #a4a4a4">
-                <p>-</p>
-                <p>-</p>
-                <p>-</p>
-            </div>
-        <div class="unit flex-left">
-            {% if user.is_authenticated %}
-                <p>{{ user.username }}</p>
-                <p>{{ user.service }}</p>
-                <p>{{ user.email }}</p>
-            {% endif %}
-        </div>
         </div>
     </div>
+    <div class="cont s--inactive">
+        <!-- cont inner start -->
+        <div class="cont__inner">
+            <!-- el start -->
+            <div class="el">
+                <div class="el__overflow">
+                    <div class="el__inner">
+                        <div class="el__bg"></div>
+                        <div class="el__preview-cont">
+                            <h2 class="el__heading">Overview</h2>
+                        </div>
+                        <div class="el__content">
+                            <div class="el__text">Overview</div>
+                            <div class="el__close-btn"></div>
+                            {% if user.is_authenticated %}
+                                <div class="unit" id="service_info">
+                                    {% if user.service == -1%}
+                                        <p>没有可用的加速服务</p>
+                                        <button class="btn btn-default" onclick="requirePort();">添加服务</button>
+                                    {% else %}
+                                        <p>你好：{{ user.username }}</p>
+                                        <p>数据使用情况：{{ datausage  }}</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- el end -->
+            <!-- el start -->
+            <div class="el">
+                <div class="el__overflow">
+                    <div class="el__inner">
+                        <div class="el__bg"></div>
+                        <div class="el__preview-cont">
+                            <h2 class="el__heading">Service</h2>
+                        </div>
+                        <div class="el__content">
+                            <div class="el__text">Service</div>
+                            <div class="el__close-btn"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- el end -->
+            <!-- el start -->
+            <div class="el">
+                <div class="el__overflow">
+                    <div class="el__inner">
+                        <div class="el__bg"></div>
+                        <div class="el__preview-cont">
+                            <h2 class="el__heading">Download</h2>
+                        </div>
+                        <div class="el__content">
+                            <div class="el__text">Download</div>
+                            <div class="el__close-btn"></div>
+                            <a href="/static/Shadowsocks.exe" download="Shadowsocks.exe">下载客户端(WIN10)</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- el end -->
+        </div>
+        <!-- cont inner end -->
+    </div>
+    <script src="{% static 'js/index.js' %}"></script>
     </body>
 {% endblock %}

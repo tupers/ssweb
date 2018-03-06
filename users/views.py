@@ -3,6 +3,9 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.http import HttpResponse
+from .ssservice import ssService
+from models import User
+import json
 
 # Create your views here.
 
@@ -41,7 +44,57 @@ def register(request):
 def index(request):
     response = HttpResponse()
     user = request.user
-    if user.is_authenticated():
-        pass
-    return render(request, 'index.html')
+    datausage=-1
+    if user.is_authenticated() and (not user.service==-1):
+        remote = ssService('127.0.0.1',7000,0.5)
+        info = remote.cmd("get{%d}"%int(user.service))
+        remote.close()
+        info = str(info)
+        info = info[info.find('(')+1:info.find(')')]
+        userinfo = info.split(",")
+        datausage = float(userinfo[1])+float(userinfo[2])
+    return render(request, 'index.html', context={'datausage':datausage})
 
+def request_check(request):
+    #response = HttpResponse()
+    user = request.user
+    if request.is_ajax() and user.is_authenticated():
+        return True
+    else:
+        return False
+
+def requireport(request):
+    if request_check(request):
+        remote = ssService('127.0.0.1',7000,0.5)
+        ret = remote.cmd("port_available")
+        remote.close()
+        ret = {"port":"%s"%ret}
+        return HttpResponse(json.dumps(ret))
+    else:
+        return redirect('/')
+
+def addservice(request):
+    if request_check(request):
+        pwd =  request.POST["password"]
+        port = request.POST["port"]
+        remote = ssService('127.0.0.1',7000,0.5)
+        ret = remote.cmd("add{%s,%s}"%(port,pwd))
+        if ret=="ok":
+            user = User.objects.get(username=request.user)
+            user.service = port
+            user.save()
+        ret = {"status":"%s"%ret}
+        return HttpResponse(json.dumps(ret))
+    else:
+        return redirect('/')
+    '''
+    response = HttpResponse()
+    user = request.user
+    if user.is_authenticated():
+        remote = ssService('127.0.0.1',7000,0.5)
+        ret = remote.cmd("port_available")
+        remote.close()
+        return HttpResponse("Available port number:%s"%ret)
+    else:
+        return HttpResponse("Need Login Fisrt")
+    '''

@@ -10,7 +10,9 @@ class ssService:
         try:
             self.sock.sendto(msg, self.host)
             data, addr = self.sock.recvfrom(1024)
-        except Exception:
+        except Exception: 
             return "ERR"
         return data
 
+    def close(self):
+        self.sock.close()
