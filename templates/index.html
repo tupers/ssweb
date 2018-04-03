@@ -3,152 +3,103 @@
     {% load staticfiles %}
     <head>
         <title>首页</title>
-        <link rel="stylesheet" href="{% static 'ccs/style.css' %}" type="text/css">
         <link rel="stylesheet" href="{% static 'ccs/custom.css' %}" type="text/css">
+        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+        <script src="{% static 'js/feature-menu.js' %}"></script>
+        <script src="{% static 'js/service.js' %}"></script>
     </head>
     <body>
-    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-    <script>
-        function requirePort(){
-            $.ajaxSetup({
-                data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
-            });
-            $.ajax({
-                url:"{% url 'users:requireport' %}",
-                type:'POST',
-                data:{user:"{{user.username}}"},
-                success: function(arg){
-                    var ret = $.parseJSON(arg);
-                    var service_info = $("#service_info");
-                    if(ret.port!="None")
-                    {
-                        service_info.empty();
-                        service_info.append("<p id=\"port\">"+ret.port+"</p>");
-                        service_info.append("<p>设置密码:</p>");
-                        service_info.append("<input type=\"text\" id=\"pwd\"/>");
-                        service_info.append("<button class=\"btn btn-default\" onclick=\"addService();\">提交</button>");
-                    }
-                    else
-                    {
-                        service_info.empty();
-                        service_info.append("<p>no available port.</p>");
-                    }
-
-                }
-            });
-        }
-        function addService(){
-            $.ajaxSetup({
-                data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
-            });
-            $.ajax({
-                url:"{% url 'users:addservice' %}",
-                type:'POST',
-                data:{password:$("#pwd").val(),port:$("#port").html()},
-                success:function(arg){
-                    var ret = $.parseJSON(arg);
-                    var service_info = $("#service_info");
-                    if(ret.status!="ok")
-                    {
-                        service_info.empty();
-                        service_info.append("<p>添加服务失败</p>");
-                    }
-                    else
-                    {
-                        service_info.empty();
-                        service_info.append("<p>添加服务成功</p>")
-                    }
-                }
-            });
-        }
-    </script>
     <div class="flex-center">
-        <div class="container-fluid nav">
+        <div class="container-fluid nav-top">
             <div class="flex-left flex-wrap">
                 <div class="unit">
                     <h1><a href="{% url 'index' %}">ShadowSocks</a></h1>
                 </div>
                 <div class="unit flex-right text-primary">
-                <ul>
+                    <ul>
                         {% if user.is_authenticated %}
-                            <li class="first-nav"><a href="#">{{ user.username }}</a></li>
+                            <li><a href="#">{{ user.username }}</a></li>
                             <li><a href="{% url 'logout' %}?next={{ request.path }}">注销登录</a></li>
                             <li><a href="{% url 'password_change' %}?next={{ request.path }}">修改密码</a></li>
                         {% else %}
-                            <li class="first-nav"><a href="{% url 'login' %}?next={{ request.path }}">登录</a></li>
+                            <li><a href="{% url 'login' %}?next={{ request.path }}">登录</a></li>
                             <li><a href="{% url 'users:register' %}">注册</a></li>
                         {% endif %}
-                </ul>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-    <div class="cont s--inactive">
-        <!-- cont inner start -->
-        <div class="cont__inner">
-            <!-- el start -->
-            <div class="el">
-                <div class="el__overflow">
-                    <div class="el__inner">
-                        <div class="el__bg"></div>
-                        <div class="el__preview-cont">
-                            <h2 class="el__heading">Overview</h2>
-                        </div>
-                        <div class="el__content">
-                            <div class="el__text">Overview</div>
-                            <div class="el__close-btn"></div>
-                            {% if user.is_authenticated %}
-                                <div class="unit" id="service_info">
-                                    {% if user.service == -1%}
-                                        <p>没有可用的加速服务</p>
-                                        <button class="btn btn-default" onclick="requirePort();">添加服务</button>
-                                    {% else %}
-                                        <p>你好：{{ user.username }}</p>
-                                        <p>数据使用情况：{{ datausage  }}</p>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+    <!--<div class="container-fluid" style="background: linear-gradient(rgb(0,14,46), rgb(15,15,15));height:30vw;" id="stars"></div>-->
+    <div class="overview features container-fluid" id="stars" style="height:30vw">
+        {% if user.is_authenticated %}
+            <div class="unit" id="service_info">
+                {% if user.service == -1%}
+                    <p>没有可用的加速服务</p>
+                    <button class="btn btn-default" onclick="requirePort();">添加服务</button>
+                {% else %}
+                    <p>你好：{{ user.username }}</p>
+                    <p>数据使用情况：{{ datausage  }}</p>
+                {% endif %}
             </div>
-            <!-- el end -->
-            <!-- el start -->
-            <div class="el">
-                <div class="el__overflow">
-                    <div class="el__inner">
-                        <div class="el__bg"></div>
-                        <div class="el__preview-cont">
-                            <h2 class="el__heading">Service</h2>
-                        </div>
-                        <div class="el__content">
-                            <div class="el__text">Service</div>
-                            <div class="el__close-btn"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- el end -->
-            <!-- el start -->
-            <div class="el">
-                <div class="el__overflow">
-                    <div class="el__inner">
-                        <div class="el__bg"></div>
-                        <div class="el__preview-cont">
-                            <h2 class="el__heading">Download</h2>
-                        </div>
-                        <div class="el__content">
-                            <div class="el__text">Download</div>
-                            <div class="el__close-btn"></div>
-                            <a href="/static/Shadowsocks.exe" download="Shadowsocks.exe">下载客户端(WIN10)</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- el end -->
-        </div>
-        <!-- cont inner end -->
+        {% else %}
+            <p>获取账号</p>
+        {% endif %}
     </div>
-    <script src="{% static 'js/index.js' %}"></script>
+    <div class="service-plan features container-fluid">
+        <div class="plan-head">
+            <h1>产品与服务</h1>
+            <ul>
+                <li>流量方案</li>
+                <li>时长方案</li>
+            </ul>
+        </div>
+        <div class="plan-detail">
+            <div class="unit">
+                <h3>试用</h3>
+                <h4>流量:1GB</h4>
+                <p>全设备支持</p>
+                <p>浏览网页、视频</p>
+                <button class="btn">获取</button>
+            </div>
+            <div class="unit">
+                <h3>试用</h3>
+                <h4>流量:1GB</h4>
+                <p>全设备支持</p>
+                <p>浏览网页、视频</p>
+                <button class="btn">获取</button>
+            </div>
+            <div class="unit">
+                <h3>试用</h3>
+                <h4>流量:1GB</h4>
+                <p>全设备支持</p>
+                <p>浏览网页、视频</p>
+                <button class="btn">获取</button>
+            </div>
+        </div>
+        <div class="plan-detail">
+            <div class="unit">
+                <h3>试用</h3>
+                <h4>流量:99GB</h4>
+                <p>全设备支持</p>
+                <p>浏览网页、视频</p>
+                <button class="btn">获取</button>
+            </div>
+            <div class="unit">
+                <h3>试用</h3>
+                <h4>流量:88GB</h4>
+                <p>全设备支持</p>
+                <p>浏览网页、视频</p>
+                <button class="btn">获取</button>
+            </div>
+        </div>
+    </div>
+    <div class="download features container-fluid">
+        <a href="/static/Shadowsocks.exe" download="Shadowsocks.exe">下载客户端(WIN10)</a>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+    </div>
+    <script src="{% static 'js/stars.js' %}"></script>
     </body>
 {% endblock %}
