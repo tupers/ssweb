@@ -47,7 +47,11 @@
 }
 
 .download {
-    background-image: url("/static/img/night_dark.jpg");
+    background: url("/static/img/night_dark.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .plan-detail{
