@@ -11,13 +11,8 @@
     <div class="overview features container-fluid" id="stars" style="height:30vw">
         {% if user.is_authenticated %}
             <div class="unit">
-                {% if user.service == -1%}
                     <p>没有可用的加速服务</p>
                     <button class="btn btn-default" onclick="jumpToService();">添加服务</button>
-                {% else %}
-                    <p>你好：{{ user.username }}</p>
-                    <p>数据使用情况：{{ datausage  }}</p>
-                {% endif %}
             </div>
         {% else %}
             <p>获取账号</p>
