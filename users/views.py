@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.http import HttpResponse
 from .ssservice import ssService
-from models import User
+from models import User,Order
 import json
 
 # Create your views here.
@@ -45,14 +45,16 @@ def index(request):
     response = HttpResponse()
     user = request.user
     datausage=-1
-    if user.is_authenticated() and (not user.service==-1):
-        remote = ssService('127.0.0.1',7000,0.5)
-        info = remote.cmd("get{%d}"%int(user.service))
-        remote.close()
-        info = str(info)
-        info = info[info.find('(')+1:info.find(')')]
-        userinfo = info.split(",")
-        datausage = float(userinfo[1])+float(userinfo[2])
+    #if user.is_authenticated() and (not user.service==-1):
+    if user.is_authenticated():
+        # remote = ssService('127.0.0.1',7000,0.5)
+        # info = remote.cmd("get{%d}"%int(user.service))
+        # remote.close()
+        # info = str(info)
+        # info = info[info.find('(')+1:info.find(')')]
+        # userinfo = info.split(",")
+        #datausage = float(userinfo[1])+float(userinfo[2])
+        datausage = 0.0
     return render(request, 'index.html', context={'datausage':datausage})
 
 def request_check(request):
@@ -62,16 +64,6 @@ def request_check(request):
         return True
     else:
         return False
-
-def requireport(request):
-    if request_check(request):
-        remote = ssService('127.0.0.1',7000,0.5)
-        ret = remote.cmd("port_available")
-        remote.close()
-        ret = {"port":"%s"%ret}
-        return HttpResponse(json.dumps(ret))
-    else:
-        return redirect('/')
 
 def addservice(request):
     if request_check(request):
@@ -98,3 +90,54 @@ def addservice(request):
     else:
         return HttpResponse("Need Login Fisrt")
     '''
+
+def service_list(request):
+    if request.method == 'POST':
+        if request_check(request):
+            password = request.POST["password"]
+            plan_dict = eval(request.POST["plan"])
+            ret = {"result": "success", "port": 7890, "ip": "35.200.82.164"}
+            return HttpResponse(json.dumps(ret))
+        else:
+            return redirect('/')
+    else:
+        group = request.GET.get('group', '')
+        plan = request.GET.get('plan', '')
+        if group == '' or plan == '':
+            group = 0
+            plan = 0
+        return render(request, 'users/service_list.html', context={'group': group, 'plan': plan})
+
+def get_orders(name):
+    user_id = User.objects.get(username=name).id
+    try:
+        orders = Order.objects.filter(owner=user_id, status__gt=0)
+        return orders
+    except Order.DoesNotExist:
+        return []
+
+def user_center(request):
+    user = request.user
+    if user.is_authenticated():
+        # search form order according username
+        orders = get_orders(user)
+        return render(request, 'users/user_center.html', context={'orders': orders})
+    else:
+        return render(request, 'users/user_center.html')
+
+def get_order_info(request):
+    if request.method == 'POST':
+        if request_check(request):
+            order_id = request.POST["id"]
+            order = Order.objects.get(id=order_id)
+            # get information from ssdb by udp
+            if int(order_id) == 1:
+                ret = "{\"result\":\"success\",\"port\":%d,\"ip\":[\"35.200.82.164\",\"35.200.14.2\"],\"dataUsage\":50,\"dataLimit\":150}"%order.port
+            else:
+                ret = "{\"result\":\"success\",\"port\":%d,\"ip\":[\"35.200.82.164\",\"35.200.14.2\"],\"dataUsage\":30,\"dataLimit\":300}" % order.port
+
+            return HttpResponse(ret)
+        else:
+            return redirect('/')
+    else:
+        return redirect('/')

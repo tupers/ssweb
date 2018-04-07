@@ -3,40 +3,17 @@
     {% load staticfiles %}
     <head>
         <title>首页</title>
-        <link rel="stylesheet" href="{% static 'ccs/custom.css' %}" type="text/css">
-        <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
         <script src="{% static 'js/feature-menu.js' %}"></script>
-        <script src="{% static 'js/service.js' %}"></script>
+        <script src="{% static 'js/util.js' %}"></script>
     </head>
     <body>
-    <div class="flex-center">
-        <div class="container-fluid nav-top">
-            <div class="flex-left flex-wrap">
-                <div class="unit">
-                    <h1><a href="{% url 'index' %}">ShadowSocks</a></h1>
-                </div>
-                <div class="unit flex-right text-primary">
-                    <ul>
-                        {% if user.is_authenticated %}
-                            <li><a href="#">{{ user.username }}</a></li>
-                            <li><a href="{% url 'logout' %}?next={{ request.path }}">注销登录</a></li>
-                            <li><a href="{% url 'password_change' %}?next={{ request.path }}">修改密码</a></li>
-                        {% else %}
-                            <li><a href="{% url 'login' %}?next={{ request.path }}">登录</a></li>
-                            <li><a href="{% url 'users:register' %}">注册</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
     <!--<div class="container-fluid" style="background: linear-gradient(rgb(0,14,46), rgb(15,15,15));height:30vw;" id="stars"></div>-->
     <div class="overview features container-fluid" id="stars" style="height:30vw">
         {% if user.is_authenticated %}
-            <div class="unit" id="service_info">
+            <div class="unit">
                 {% if user.service == -1%}
                     <p>没有可用的加速服务</p>
-                    <button class="btn btn-default" onclick="requirePort();">添加服务</button>
+                    <button class="btn btn-default" onclick="jumpToService();">添加服务</button>
                 {% else %}
                     <p>你好：{{ user.username }}</p>
                     <p>数据使用情况：{{ datausage  }}</p>
@@ -46,7 +23,7 @@
             <p>获取账号</p>
         {% endif %}
     </div>
-    <div class="service-plan features container-fluid">
+    <div class="service-plan features container-fluid" id="service_plan">
         <div class="plan-head">
             <h1>产品与服务</h1>
             <ul>
@@ -60,21 +37,21 @@
                 <h4>流量:1GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <button class="btn">获取</button>
+                <a href="{% url 'users:service_list' %}?group=0&plan=0">获取</a>
             </div>
             <div class="unit">
                 <h3>试用</h3>
                 <h4>流量:1GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <button class="btn">获取</button>
+                <a href="{% url 'users:service_list' %}?group=0&plan=1">获取</a>
             </div>
             <div class="unit">
                 <h3>试用</h3>
                 <h4>流量:1GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <button class="btn">获取</button>
+                <a href="{% url 'users:service_list' %}?group=0&plan=2">获取</a>
             </div>
         </div>
         <div class="plan-detail">
@@ -83,20 +60,19 @@
                 <h4>流量:99GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <button class="btn">获取</button>
+                <a href="{% url 'users:service_list' %}?group=1&plan=0">获取</a>
             </div>
             <div class="unit">
                 <h3>试用</h3>
                 <h4>流量:88GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <button class="btn">获取</button>
+                <a href="{% url 'users:service_list' %}?group=1&plan=1">获取</a>
             </div>
         </div>
     </div>
     <div class="download features container-fluid">
         <a href="/static/Shadowsocks.exe" download="Shadowsocks.exe">下载客户端(WIN10)</a>
-        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
     </div>

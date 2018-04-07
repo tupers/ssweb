@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block mainbody %}
+    {% load staticfiles %}
+    <head>
+        <script src="{% static 'js/Chart.min.js' %}"></script>
+        <script src="{% static 'js/user_center.js' %}"></script>
+    </head>
+    {% if user.is_authenticated %}
+        <body>
+        <div class="container-fluid">
+            <h1>Welcome,{{ user.username }}</h1>
+        </div>
+        <div class="container-fluid">
+            <div class="flex-center flex-wrap">
+                <div class="unit-1-3 unit-1-on-mobile order_list">
+                    <h3>订单列表</h3>
+                    {% if orders|length %}
+                        <ul>
+                            {% for order in orders%}
+                                <li>订单编号:<span>{{ order.id }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>没有可用的订单，<a href="{% url 'users:service_list' %}">添加</a></p>
+                    {% endif %}
+                </div>
+                <div class="unit-2-3 unit-1-on-mobile order_info">
+                    {% if orders|length %}
+                        <div class="show-on-mobile form">
+                            <select id="order_select">
+                                {% for order in orders%}
+                                    <option value="{{ order.id }}" label="订单编号:{{ order.id }}"></option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    <div class="_hide" id="info">
+                        <div class="flex-center flex-wrap units-gap-big">
+                            <div class="unit-1-2 unit-1-on-mobile">
+                                <table class="table" id="attr_table">
+                                    <tbody>
+                                    <tr>
+                                        <td>端口</td>
+                                        <td>8888</td>
+                                    </tr>
+                                    <tr>
+                                        <td>加密方式</td>
+                                        <td>aes-256-cfb</td>
+                                    </tr>
+                                    <tr>
+                                        <td>已使用</td>
+                                        <td>0.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>剩余</td>
+                                        <td>0.0</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="unit-1-2 unit-1-on-mobile">
+                                <canvas id="usage_chart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <table class="table" id="node_table">
+                                <caption>节点信息</caption>
+                                <thead>
+                                <tr>
+                                    <th>节点名称</th>
+                                    <th>节点地址</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>东亚01</td>
+                                    <td>35.200.14.2</td>
+                                </tr>
+                                <tr>
+                                    <td>东亚02</td>
+                                    <td>35.200.82.164</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="info_none">
+                        <p>无数据</p>
+                    </div>
+                    {% if orders|length %}
+                        <!--show first order info from order list-->
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script>
+            init_order_list('{{ csrf_token }}');
+            init_order_list_mobile('{{ csrf_token }}');
+            create_usage_chart(50,50);
+            {% if orders|length %}
+                select_order('div.order_list',0,'{{ csrf_token }}');
+            {% endif %}
+        </script>
+    {% else %}
+        <p>请先<a href="{% url 'login' %}?next={{ request.path }}">登录</a></p>
+    {% endif %}
+</body>
+{% endblock %}

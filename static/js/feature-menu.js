@@ -22,4 +22,5 @@ $(document).ready(function () {
     //display first ctx as default
     plan_tabs.eq(0).addClass("plan-head-selected");
     plans.eq(0).addClass("plan-detail-selected");
+
 })

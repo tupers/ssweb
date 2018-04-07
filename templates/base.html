@@ -6,11 +6,31 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="{% static 'ccs/mobi.css/dist/mobi.min.css' %}" type="text/css">
-    <style>
-        .errorlist {
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'ccs/custom.css' %}" type="text/css">
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 </head>
+<body>
+<div class="flex-center">
+    <div class="container-fluid nav-top">
+        <div class="flex-left flex-wrap">
+            <div class="unit">
+                <h1><a href="{% url 'index' %}">ShadowSocks</a></h1>
+            </div>
+            <div class="unit flex-right">
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'users:user_center' %}">{{ user.username }}</a></li>
+                        <li><a href="{% url 'logout' %}?next={{ request.path }}">注销登录</a></li>
+                        <li><a href="{% url 'password_change' %}?next={{ request.path }}">修改密码</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}?next={{ request.path }}">登录</a></li>
+                        <li><a href="{% url 'users:register' %}">注册</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
 {% block mainbody %}{% endblock %}
 </html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block mainbody %}
+    {% load staticfiles %}
+    <head>
+        <script src="{% static 'js/service.js' %}"></script>
+    </head>
+    <body>
+    {% if user.is_authenticated %}
+        <div class="container-fluid">
+            <div class="flex-center flex-wrap units-gap-big">
+                <div class="unit-1-3 unit-1-on-mobile">
+                    <h1>获取服务</h1>
+                    <div class="form" id="service_form">
+                        <p>密码:<input type="text" id="form_password" placeholder="端口密码"/></p>
+                        <p class="_alert _hide" id="form_password_err">端口密码不能为空</p>
+                        <p>方案：
+                            <select id="form_plan">
+                                <option value="{'group':0,'plan':0}" label="流量方案0"></option>
+                                <option value="{'group':0,'plan':1}" label="流量方案1"></option>
+                                <option value="{'group':0,'plan':2}" label="流量方案2"></option>
+                                <option value="{'group':1,'plan':0}" label="时长方案0"></option>
+                                <option value="{'group':1,'plan':1}" label="时长方案1"></option>
+                            </select>
+                        </p>
+                        <p><button class="btn" onclick="addService('{{ csrf_token }}');">提交</button></p>
+                    </div>
+                    <div class="_hide" id="service_failed">
+                        <p>订单提交失败，请稍后重试</p>
+                    </div>
+                    <div class="_hide" id="service_success">
+                        <p>订单提交成功</p>
+                        <p>订单：xxx 已成功创建</p>
+                        <p>进入用户中心查看完整订单信息</p>
+                    </div>
+                </div>
+                <div class="unit-2-3 unit-1-on-mobile">
+                    <h1>查看服务</h1>
+                    <ul>
+                        <li>
+                            <p>试用</p>
+                            <p>15天，流量1G</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script>
+            _select_plan({{ group }},{{ plan }});
+        </script>
+    {% else %}
+        <p>请先<a href="{% url 'login' %}?next={{ request.path }}">登录</a></p>
+    {% endif %}
+
+    </body>
+{% endblock %}

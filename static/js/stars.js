@@ -27,5 +27,3 @@ for (var i = 0, len = star.length; i < len; i++)
 {
     star[i].style.animationDelay = i % 6 == 0 ? '0s' : i * 0.8 + 's'
 }
-
-console.log(height,width)

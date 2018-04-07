@@ -1,9 +1,19 @@
+/*-------------hide and show------------*/
+._hide{
+    display: none;
+}
+
+._alert{
+    color:red;
+}
+
+/*-----------------------------*/
 .nav-top {
-    background-color: #000913;
+    background-color: #0f0f0f;
 }
 .nav-top a{
     text-decoration:none;
-    color:white
+    color: whitesmoke
 }
 
 .nav-top ul{
@@ -15,7 +25,7 @@
     padding-left: 1rem;
     list-style-type:none;
     display:inline-block;
-    border-left:1px solid white;
+    border-left:1px solid whitesmoke;
 
 }
 
@@ -38,20 +48,16 @@
 
 .overview {
     background-image: url("/static/img/fall.png");
-    color:white;
+    color:whitesmoke;
 }
 
 .service-plan {
-    color:white;
+    color:whitesmoke;
     background-image: url("/static/img/shade.jpg");
 }
 
 .download {
-    background: url("/static/img/night_dark.jpg") no-repeat center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
+    background-image: url("/static/img/night_dark.jpg");
 }
 
 .plan-detail{
@@ -69,9 +75,9 @@
     padding:0.5rem;
     float:left;
     right:50%;
-    border:1px solid #878787;
+    border:1px solid whitesmoke;
     border-radius:0.2rem;
-    box-shadow:0px 0px 10px 1px #878787;
+    box-shadow:0px 0px 10px 1px whitesmoke;
     width:18rem;
 }
 
@@ -108,7 +114,7 @@
     left:45%;
     width:10%;
     height:100%;
-    border-bottom:0.4rem solid white;
+    border-bottom:0.4rem solid whitesmoke;
     z-index:1;
 }
 
@@ -172,4 +178,46 @@
 
 .overview.guest{
 
+}
+
+/*-----------user_center------------*/
+.order_list
+{
+
+}
+
+.order_list ul{
+    padding:1rem 0 1rem 1rem;
+}
+
+.order_list li{
+    list-style-type:none;
+    margin-right:-1px;
+    padding: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.order_list_selected {
+    border:1px solid;
+    border-right-color:white;
+}
+
+.order_info{
+    padding:1rem;
+    border:1px solid;
+    position:relative;
+    z-index: 1;
+}
+
+@media (max-width: 767px) {
+    .order_list{
+        display:none;
+    }
+    .order_list ul{
+        padding:1rem;
+    }
+    .order_list li{
+        border:1px solid black;
+    }
 }
