@@ -131,11 +131,9 @@ def get_order_info(request):
             order_id = request.POST["id"]
             order = Order.objects.get(id=order_id)
             # get information from ssdb by udp
-            if int(order_id) == 1:
-                ret = "{\"result\":\"success\",\"port\":%d,\"ip\":[\"35.200.82.164\",\"35.200.14.2\"],\"dataUsage\":50,\"dataLimit\":150}"%order.port
-            else:
-                ret = "{\"result\":\"success\",\"port\":%d,\"ip\":[\"35.200.82.164\",\"35.200.14.2\"],\"dataUsage\":30,\"dataLimit\":300}" % order.port
-
+            remote = ssService('127.0.0.1',9003,0.5)
+            ret = remote.cmd("\"cmd\":\"get\",\"port\":%d,\"group\":%d"%(order.port,order.ip_group));
+            remote.close()
             return HttpResponse(ret)
         else:
             return redirect('/')

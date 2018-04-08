@@ -50,14 +50,17 @@ function get_order_information(order_id,csrf) {
         data: {id:order_id},
         success: function (arg) {
             var msg = $.parseJSON(arg);
-            if (msg.result == 'success') {
+            if (msg.ret == 'success') {
                 //set port
-                $('#attr_table tr:eq(0) td:eq(1)').html(msg.port)
+                $('#attr_table tr:eq(0) td:eq(1)').html(msg.port);
                 //set usage
-                $('#attr_table tr:eq(2) td:eq(1)').html(msg.dataUsage)
-                $('#attr_table tr:eq(3) td:eq(1)').html(msg.dataLimit-msg.dataUsage)
+                $('#attr_table tr:eq(2) td:eq(1)').html(msg.dataUsage);
+                $('#attr_table tr:eq(3) td:eq(1)').html(msg.dataLimit-msg.dataUsage);
                 //update chart
-                update_usage_chart(msg.dataUsage,msg.dataLimit-msg.dataUsage);
+		if(msg.dataLimit == -1)
+		    update_usage_chart(1,100);
+		else
+			update_usage_chart(msg.dataUsage,msg.dataLimit-msg.dataUsage);
                 $('#info').removeClass("_hide");
                 $('#info_none').addClass("_hide");
             }
