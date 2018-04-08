@@ -26,7 +26,7 @@ function addService(csrf){
                 $('#service_form').addClass("_hide");
                 var msg = $.parseJSON(arg);
                 //service_info.append("<p>添加服务失败</p>");
-                if (msg.result == 'success')
+                if (msg.ret == 'success')
                     $('#service_success').removeClass("_hide");
                 else
                     $('#service_failed').removeClass("_hide");

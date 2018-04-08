@@ -65,39 +65,25 @@ def request_check(request):
     else:
         return False
 
-def addservice(request):
-    if request_check(request):
-        pwd =  request.POST["password"]
-        port = request.POST["port"]
-        remote = ssService('127.0.0.1',7000,0.5)
-        ret = remote.cmd("add{%s,%s}"%(port,pwd))
-        if ret=="ok":
-            user = User.objects.get(username=request.user)
-            user.service = port
-            user.save()
-        ret = {"status":"%s"%ret}
-        return HttpResponse(json.dumps(ret))
-    else:
-        return redirect('/')
-    '''
-    response = HttpResponse()
-    user = request.user
-    if user.is_authenticated():
-        remote = ssService('127.0.0.1',7000,0.5)
-        ret = remote.cmd("port_available")
-        remote.close()
-        return HttpResponse("Available port number:%s"%ret)
-    else:
-        return HttpResponse("Need Login Fisrt")
-    '''
-
 def service_list(request):
     if request.method == 'POST':
         if request_check(request):
             password = request.POST["password"]
             plan_dict = eval(request.POST["plan"])
-            ret = {"result": "success", "port": 7890, "ip": "35.200.82.164"}
-            return HttpResponse(json.dumps(ret))
+            
+            #cmd add and insert in order list
+            #ignore plan for temporary
+            user_id = User.objects.get(username=request.user).id
+            remote = ssService('127.0.0.1',9003,0.5)
+            ret = remote.cmd("{\"cmd\":\"add\",\"password\":\"%s\"}"%password);
+            remote.close()
+            ret_json = json.loads(ret)
+            if ret_json["ret"] == "success":
+                #add order
+                order = Order(port=int(ret_json["port"]),ip_group=int(ret_json["ip_group"]),strategy=0,owner=user_id,status=1)
+                order.save()
+                
+            return HttpResponse(ret)
         else:
             return redirect('/')
     else:
@@ -132,7 +118,7 @@ def get_order_info(request):
             order = Order.objects.get(id=order_id)
             # get information from ssdb by udp
             remote = ssService('127.0.0.1',9003,0.5)
-            ret = remote.cmd("\"cmd\":\"get\",\"port\":%d,\"group\":%d"%(order.port,order.ip_group));
+            ret = remote.cmd("{\"cmd\":\"get\",\"port\":%d,\"group\":%d}"%(order.port,order.ip_group));
             remote.close()
             return HttpResponse(ret)
         else:
