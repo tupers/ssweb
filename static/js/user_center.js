@@ -52,21 +52,43 @@ function get_order_information(order_id,csrf) {
         success: function (arg) {
             var msg = $.parseJSON(arg);
             if (msg.ret == 'success') {
-                //set port
+                //set port and password
                 $('#attr_table tr:eq(0) td:eq(1)').html(msg.port);
-                //set usage
-                $('#attr_table tr:eq(2) td:eq(1)').html(((msg.dataUsage/1024.0)/1024.0).toFixed(2));
-                //update chart
+		$('#attr_table tr:eq(1) td:eq(1)').html(msg.password);
+                //update chart and data usage
+                $('#attr_table tr:eq(3) td:eq(1)').html(((msg.dataUsage/1024.0)/1024.0).toFixed(2));
 		if(msg.dataLimit == -1)
 		{
-			$('#attr_table tr:eq(3) td:eq(1)').html(-1);
+			$('#attr_table tr:eq(4) td:eq(1)').html(-1);
 		    update_usage_chart(1,100);
 		}
 		else
 		{
-			$('#attr_table tr:eq(3) td:eq(1)').html(msg.dataLimit-msg.dataUsage);
+			$('#attr_table tr:eq(4) td:eq(1)').html(msg.dataLimit-msg.dataUsage);
 			update_usage_chart(msg.dataUsage,msg.dataLimit-msg.dataUsage);
 		}
+
+		//update status
+		if(msg.used == 1)
+			$('#attr_table tr:eq(5) td:eq(1)').html("启用");
+		else
+			$('#attr_table tr:eq(5) td:eq(1)').html("停用");
+
+		//update ip addr
+		var ip_table = $('#node_table').children("tbody");
+		ip_table.empty();
+		var ip_arr = msg.ip;
+		var len = ip_arr.length;
+		for(var i=0;i<len;i++)
+		{
+			var addr;
+			if(ip_arr[i] == "127.0.0.1")
+				addr = "35.200.82.164";
+			else
+				addr = ip_arr[i];
+			ip_table.append("<tr><td>地址:"+i+"</td><td>"+addr+"</td></tr>");
+		}
+
                 $('#info').removeClass("_hide");
                 $('#info_none').addClass("_hide");
             }

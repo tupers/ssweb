@@ -10,12 +10,16 @@
     <!--<div class="container-fluid" style="background: linear-gradient(rgb(0,14,46), rgb(15,15,15));height:30vw;" id="stars"></div>-->
     <div class="overview features container-fluid" id="stars" style="height:30vw">
         {% if user.is_authenticated %}
-            <div class="unit">
+		<div class="unit">
+        	{% if orders|length %}
+			<a class="btn" href="{% url 'users:user_center' %}">用户中心</a>
+		{% else %}
                     <p>没有可用的加速服务</p>
                     <button class="btn btn-default" onclick="jumpToService();">添加服务</button>
+	    {% endif %}
             </div>
         {% else %}
-            <p>获取账号</p>
+	<a class="btn" href="{% url 'login' %}">获取账号</a>
         {% endif %}
     </div>
     <div class="service-plan features container-fluid" id="service_plan">
@@ -32,21 +36,21 @@
                 <h4>流量:1GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <a href="{% url 'users:service_list' %}?group=0&plan=0">获取</a>
+                <a class="btn" href="{% url 'users:service_list' %}?group=0&plan=0">获取</a>
             </div>
             <div class="unit">
                 <h3>试用</h3>
                 <h4>流量:1GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <a href="{% url 'users:service_list' %}?group=0&plan=1">获取</a>
+                <a class="btn" href="{% url 'users:service_list' %}?group=0&plan=1">获取</a>
             </div>
             <div class="unit">
                 <h3>试用</h3>
                 <h4>流量:1GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <a href="{% url 'users:service_list' %}?group=0&plan=2">获取</a>
+                <a class="btn" href="{% url 'users:service_list' %}?group=0&plan=2">获取</a>
             </div>
         </div>
         <div class="plan-detail">
@@ -55,14 +59,14 @@
                 <h4>流量:99GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <a href="{% url 'users:service_list' %}?group=1&plan=0">获取</a>
+                <a class="btn" href="{% url 'users:service_list' %}?group=1&plan=0">获取</a>
             </div>
             <div class="unit">
                 <h3>试用</h3>
                 <h4>流量:88GB</h4>
                 <p>全设备支持</p>
                 <p>浏览网页、视频</p>
-                <a href="{% url 'users:service_list' %}?group=1&plan=1">获取</a>
+                <a class="btn" href="{% url 'users:service_list' %}?group=1&plan=1">获取</a>
             </div>
         </div>
     </div>

@@ -21,8 +21,9 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p>没有可用的订单，<a href="{% url 'users:service_list' %}">添加</a></p>
+                        <p>没有可用的订单</p>
                     {% endif %}
+		    <a href="{% url 'users:service_list' %}">添加服务</a>
                 </div>
                 <div class="unit-2-3 unit-1-on-mobile order_info">
                     {% if orders|length %}
@@ -32,6 +33,7 @@
                                     <option value="{{ order.id }}" label="订单编号:{{ order.id }}"></option>
                                 {% endfor %}
                             </select>
+			    <a href="{% url 'users:service_list' %}">添加服务</a>
                         </div>
                     {% endif %}
                     <div class="_hide" id="info">
@@ -43,6 +45,10 @@
                                         <td>端口</td>
                                         <td>8888</td>
                                     </tr>
+				    <tr>
+					    <td>密码</td>
+					    <td>00000000</td>
+				    </tr>
                                     <tr>
                                         <td>加密方式</td>
                                         <td>aes-256-cfb</td>
@@ -55,6 +61,10 @@
                                         <td>剩余</td>
                                         <td>0.0</td>
                                     </tr>
+				    <tr>
+					    <td>状态</td>
+					    <td>启用</td>
+				    </tr>
                                     </tbody>
                                 </table>
                             </div>

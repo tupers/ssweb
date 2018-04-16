@@ -5,11 +5,11 @@
         <script src="{% static 'js/service.js' %}"></script>
     </head>
     <body>
-    {% if user.is_authenticated %}
         <div class="container-fluid">
             <div class="flex-center flex-wrap units-gap-big">
                 <div class="unit-1-3 unit-1-on-mobile">
                     <h1>获取服务</h1>
+    {% if user.is_authenticated %}
                     <div class="form" id="service_form">
                         <p>密码:<input type="text" id="form_password" placeholder="端口密码"/></p>
                         <p class="_alert _hide" id="form_password_err">端口密码不能为空</p>
@@ -32,6 +32,9 @@
                         <p>订单：xxx 已成功创建</p>
 			<p>进入<a href="{% url 'users:user_center' %}">用户中心</a>查看完整订单信息</p>
                     </div>
+    {% else %}
+        <p>请先<a href="{% url 'login' %}?next={{ request.path }}">登录</a></p>
+    {% endif %}
                 </div>
                 <div class="unit-2-3 unit-1-on-mobile">
                     <h1>查看服务</h1>
@@ -47,9 +50,5 @@
         <script>
             _select_plan({{ group }},{{ plan }});
         </script>
-    {% else %}
-        <p>请先<a href="{% url 'login' %}?next={{ request.path }}">登录</a></p>
-    {% endif %}
-
     </body>
 {% endblock %}

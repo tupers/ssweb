@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from .ssservice import ssService
 from models import User,Order
 import json
@@ -42,20 +42,11 @@ def register(request):
     return render(request, 'users/register.html', context={'form': form, 'next': redirect_to})
 
 def index(request):
-    response = HttpResponse()
     user = request.user
-    datausage=-1
-    #if user.is_authenticated() and (not user.service==-1):
+    orders = []
     if user.is_authenticated():
-        # remote = ssService('127.0.0.1',7000,0.5)
-        # info = remote.cmd("get{%d}"%int(user.service))
-        # remote.close()
-        # info = str(info)
-        # info = info[info.find('(')+1:info.find(')')]
-        # userinfo = info.split(",")
-        #datausage = float(userinfo[1])+float(userinfo[2])
-        datausage = 0.0
-    return render(request, 'index.html', context={'datausage':datausage})
+        orders = get_orders(user)
+    return render(request, 'index.html', context={'orders':orders})
 
 def request_check(request):
     #response = HttpResponse()
@@ -68,12 +59,18 @@ def request_check(request):
 def service_list(request):
     if request.method == 'POST':
         if request_check(request):
+            orders = get_orders(request.user)
+            user_id = User.objects.get(username=request.user).id
+            #normal user only can creat one order
+            if len(orders)>0 and user_id != 1:
+                ret = "{\"ret\":\"failed\"}"
+                return HttpResponse(ret)
+
             password = request.POST["password"]
             plan_dict = eval(request.POST["plan"])
             
             #cmd add and insert in order list
             #ignore plan for temporary
-            user_id = User.objects.get(username=request.user).id
             remote = ssService('127.0.0.1',9003,0.5)
             ret = remote.cmd("{\"cmd\":\"add\",\"password\":\"%s\"}"%password);
             remote.close()
@@ -125,3 +122,22 @@ def get_order_info(request):
             return redirect('/')
     else:
         return redirect('/')
+
+def get_auth_obj(request):
+    import hmac,hashlib,time
+    gateone_server = 'http://127.0.0.1:8000'
+    api_key = "ZGE4Yzg4YWM4YzkwNDU4YTgzNWRmYzBhM2UyNTQ0ZmFmM"
+    secret = "NzlkNjNjZGI2ZWIyNGE1NDgzNTg4YzAxYjY0YmFmNDBkY"
+    authobj = {
+            'api_key':api_key,
+            'upn':'gateone',
+            'timestamp':str(int(time.time()*1000)),
+            'signature_method':'HMAC-SHA1',
+            'api_version':'1.0'
+            }
+
+    hash = hmac.new(str(secret),digestmod=hashlib.sha1)
+    hash.update(authobj['api_key']+authobj['upn']+authobj['timestamp'])
+    authobj['signature'] = hash.hexdigest()
+    auth_info_and_server = {'url':gateone_server,'auth':authobj}
+    return JsonResponse(auth_info_and_server)
