@@ -19,3 +19,9 @@ class Order(models.Model):
     def __str__(self):
         brief = "id:%d, owner:%d, status:%d, port:%d, ip_group:%d"%(self.id,self.owner,self.status,self.port,self.ip_group)
         return brief
+
+class Plan(models.Model):
+    name = models.CharField(max_length=200,default='free trail')
+    peroid = models.IntegerField(default = -1)
+    data_limit = models.IntegerField(default = -1)
+    peroid_times = models.IntegerField(default = 0)

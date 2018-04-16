@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.http import HttpResponse,JsonResponse
 from .ssservice import ssService
-from models import User,Order
+from models import User,Order,Plan
 import json
 
 # Create your views here.
@@ -67,29 +67,31 @@ def service_list(request):
                 return HttpResponse(ret)
 
             password = request.POST["password"]
-            plan_dict = eval(request.POST["plan"])
+            plan = Plan.objects.get(id = int(request.POST["plan"]))
             
             #cmd add and insert in order list
             #ignore plan for temporary
             remote = ssService('127.0.0.1',9003,0.5)
-            ret = remote.cmd("{\"cmd\":\"add\",\"password\":\"%s\"}"%password);
+            ret = remote.cmd("{\"cmd\":\"add\",\"password\":\"%s\",\"dataLimit\":%d,\"peroid\":%d,\"peroid_times\":%d}"%(password,plan.data_limit,plan.peroid,plan.peroid_times));
             remote.close()
             ret_json = json.loads(ret)
             if ret_json["ret"] == "success":
                 #add order
-                order = Order(port=int(ret_json["port"]),ip_group=int(ret_json["ip_group"]),strategy=0,owner=user_id,status=1)
+                order = Order(port=int(ret_json["port"]),ip_group=int(ret_json["ip_group"]),strategy=plan.id,owner=user_id,status=1)
                 order.save()
                 
             return HttpResponse(ret)
         else:
             return redirect('/')
     else:
+        plans = []
+        plans = Plan.objects.all()
         group = request.GET.get('group', '')
         plan = request.GET.get('plan', '')
         if group == '' or plan == '':
             group = 0
             plan = 0
-        return render(request, 'users/service_list.html', context={'group': group, 'plan': plan})
+        return render(request, 'users/service_list.html', context={'group': group, 'plan': plan, 'plans':plans})
 
 def get_orders(name):
     user_id = User.objects.get(username=name).id
@@ -141,3 +143,4 @@ def get_auth_obj(request):
     authobj['signature'] = hash.hexdigest()
     auth_info_and_server = {'url':gateone_server,'auth':authobj}
     return JsonResponse(auth_info_and_server)
+

@@ -10,7 +10,7 @@ $(function () {
 
 function _select_plan(group,plan){
     var opt = "{'group':"+group+",'plan':"+plan+"}";
-    $('#form_plan').val(opt);
+    $('#form_plan').val(1);
 }
 
 function addService(csrf){
@@ -30,7 +30,6 @@ function addService(csrf){
                     $('#service_success').removeClass("_hide");
                 else
                     $('#service_failed').removeClass("_hide");
-
             }
         });
     }

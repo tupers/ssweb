@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block mainbody %}
     {% load staticfiles %}
+    {% load users_extras %}
     <head>
         <script src="{% static 'js/service.js' %}"></script>
     </head>
@@ -15,11 +16,11 @@
                         <p class="_alert _hide" id="form_password_err">端口密码不能为空</p>
                         <p>方案：
                             <select id="form_plan">
-                                <option value="{'group':0,'plan':0}" label="流量方案0"></option>
-                                <option value="{'group':0,'plan':1}" label="流量方案1"></option>
-                                <option value="{'group':0,'plan':2}" label="流量方案2"></option>
-                                <option value="{'group':1,'plan':0}" label="时长方案0"></option>
-                                <option value="{'group':1,'plan':1}" label="时长方案1"></option>
+				{% if plans|length %}
+				{% for plan in plans%}
+				<option value={{plan.id}} label={{plan.id}}></option>
+				{% endfor %}
+				{% endif %}
                             </select>
                         </p>
                         <p><button class="btn" onclick="addService('{{ csrf_token }}');">提交</button></p>
@@ -39,10 +40,19 @@
                 <div class="unit-2-3 unit-1-on-mobile">
                     <h1>查看服务</h1>
                     <ul>
-                        <li>
-                            <p>试用</p>
-                            <p>15天，流量1G</p>
-                        </li>
+			{% if plans|length %}
+			{% for plan in plans%}
+			<li>
+				<p>{{plan.name}}</p>
+				<p>流量:{{ plan.data_limit|divide:1024|divide:1024|divide:1024 }}G</p>
+				{% if plan.peroid > -1 %}
+				<p>有效期:{{ plan.peroid_times|add:1|multiply:plan.peroid }} 天</p>
+				{% else %}
+				<p>有效期:不限</p>
+				{% endif %}
+			</li>
+			{% endfor %}
+			{% endif %}
                     </ul>
                 </div>
             </div>
